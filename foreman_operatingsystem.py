@@ -42,6 +42,10 @@ options:
     description: Release name
     required: false
     default: None
+  password_hash:
+    description: Root password hash
+    required: false
+    default: None
   state:
     description: OS state
     required: false
@@ -141,7 +145,7 @@ def get_resources(resource_type, resource_specs):
 
 
 def ensure():
-    comparable_keys = ['description', 'family', 'major', 'minor', 'release_name']
+    comparable_keys = ['description', 'family', 'major', 'minor', 'release_name', 'password_hash']
     name = module.params['name']
     state = module.params['state']
 
@@ -175,6 +179,8 @@ def ensure():
     if module.params['ptables']:
         data['ptables'] = get_resources(resource_type='ptables', resource_specs=module.params['ptables'])
     data['release_name'] = module.params['release_name']
+    if module.params['password_hash']:
+        data['password_hash'] = module.params['password_hash']
 
     if not os:
         try:
@@ -211,6 +217,7 @@ def main():
             name=dict(type='str', required=True),
             ptables=dict(type='list', required=False),
             release_name=dict(type='str', required=False),
+            password_hash=dict(type='str', required=False),
             state=dict(type='str', default='present', choices=['present', 'absent']),
             foreman_host=dict(type='str', default='127.0.0.1'),
             foreman_port=dict(type='str', default='443'),
